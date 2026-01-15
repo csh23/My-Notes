@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>笔记管理系统</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+
+    <!-- 主内容区 -->
+    <main class="app-container">
+        <!-- 左侧：笔记分类栏 -->
+        <aside class="sidebar">
+            <div class="user-zone">
+                <div class="user" id="no-login">
+                    <img src="img/bust1.jpg" alt="用户头像" class="user-bust">
+                    <p class="user-name">请登录</p>
+                </div>
+                <div class="user-tools">
+                    <button id="sets" class="icon-btn" title="设置" style="opacity: 0.7;">
+                        <i class="fa fa-cog"></i>
+                    </button>
+                    <div class="sets-bar">
+                        <a href="#" class="changeuser">切换账号</a>
+                        <a href="#" class="outlogin">退出登录</a>
+                        <a href="#" class="language">切换语言</a>
+                        <a href="#" class="theme" >夜间模式</a>
+                    </div>
+                </div>
+            </div>
+            <div class="sidebar-header">
+                <h2>笔记</h2>
+            </div>
+            <div class="categories-list">
+                <div class="category-item active" data-category-id="all">
+                    <i class="fas fa-sticky-note"></i>
+                    <span class="category-name">全部笔记</span>
+                </div>
+                <div class="category-item" data-category-id="deleted">
+                    <i class="fas fa-trash"></i>
+                    <span class="category-name">最近删除</span>
+                </div>
+                <div class="category-item" data-category-id="uncategorized">
+                    <i class="fas fa-tag"></i>
+                    <span class="category-name">未分类</span>
+                </div>
+                <!-- 用户创建的分类将在这里动态添加 -->
+            </div>
+            <div class="private-note">
+                <div class="private-item" data-category-id="private">
+                    <i class="fas fa-lock"></i>
+                    <span class="private-name">私密</span>
+                </div>
+            </div>
+
+
+            <div class="sidebar-footer">
+                <button id="add-categories-btn" class="secondary-btn">
+                    新建
+                </button>
+                <button id="manage-categories-btn" class="secondary-btn">
+                    管理
+                </button>
+            </div>
+        </aside>
+
+        <!-- 中间：笔记列表栏 -->
+        <section class="notes-list-container">
+            <div class="notes-list-header">
+                <h3 id="current-category-title">全部笔记</h3>
+                <div class="Menu"></div>
+            </div>
+
+             <!-- 搜索栏 -->
+            <div class="search-bar">
+                <!-- 搜索框 -->
+                <div class="search-box">
+                    <i class="fas fa-search"></i>
+                    <input type="text" id="search-input" placeholder="搜索笔记标题或内容...">
+                    
+                </div>
+                <button id="new-note-btn" class="icon-btn" title="新建笔记">
+                    <i class="fas fa-plus"></i>
+                </button>
+            </div>
+                     
+            <!-- 详情条 -->
+            <div class="detail">
+                <p>共0条笔记</p>
+                <select name="filter">
+                    <option value="time">按编辑时间</option>
+                    <option value="createTime">按创建时间</option>
+                    <option value="title">按标题</option>
+                    <option value="time">按分类</option>
+                </select>
+            </div>   
+            
+            <div class="notes-list" id="notes-list">
+                <!-- 笔记列表项将在这里动态添加 -->
+            
+            </div>
+
+
+        </section>
+
+        <!-- 右侧：笔记编辑栏 -->
+        <section class="editor-container">
+            <div class="editor-header">
+                <div class="editor-title">
+
+                    <div class="editor-tools">
+                        <button class="tool-btn" data-tool="bold" title="加粗" >
+                            <i class="fas fa-bold"></i>
+                        </button>
+                        <button class="tool-btn" data-tool="italic" title="斜体">
+                            <i class="fas fa-italic"></i>
+                        </button>
+                        <button class="tool-btn" data-tool="list" title="列表">
+                            <i class="fas fa-list"></i>
+                        </button>
+                        <button class="tool-btn" data-tool="link" title="插入链接">
+                            <i class="fas fa-link"></i>
+                        </button>
+                        <button class="tool-btn" data-tool="tab" title="添加标签">
+                            <i class="fas fa-sticky-note"></i>
+                        </button>
+                        <button class="tool-btn" data-tool="output" title="导出笔记">
+                            <i class="fas fa-download"></i>
+                        </button>
+                    </div>
+                    <div class="editor-stats">
+                        <span id="word-count">0 字</span>
+                    </div>
+                </div>
+
+                <div class="editor-content">
+                    <input type="text" id="note-title" placeholder="笔记标题">
+                    <div id="rich-editor" class="rich-editor" contenteditable="true" data-placeholder="开始记录你的想法..."></div>
+                    <textarea id="note-content" style="display:none;"></textarea>
+                </div>
+            </div>
+            
+        </section>
+    </main>
+
+    <div class="under-sign">
+        <p>102300106-陈思焓 @ 笔记管理系统</p>
+    </div>
+
+    <!-- 模态框 - 新建/编辑分类 -->
+    <div id="category-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modal-title">新建分类</h3>
+                <button class="close-modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="category-name">分类名称</label>
+                    <input type="text" id="category-name" placeholder="输入分类名称">
+                    <p class="error-message" id="category-error"></p>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button id="cancel-category" class="secondary-btn">取消</button>
+                <button id="save-category" class="primary-btn">保存</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 模态框 - 移动笔记 -->
+    <div id="move-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>移动笔记到</h3>
+                <button class="close-modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="move-to-category">选择目标分类</label>
+                    <select id="move-to-category">
+                        <option value="uncategorized">未分类</option>
+                    </select>
+                </div>
+                <p class="modal-hint">选中的笔记将被移动到所选分类</p>
+            </div>
+            <div class="modal-footer">
+                <button id="cancel-move" class="secondary-btn">取消</button>
+                <button id="confirm-move" class="primary-btn">移动</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- -- 模态框 - 设置密码 -->
+    <div id="setpassword-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>私密笔记密码</h3>
+                <button class="close-modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="set-newpassword">
+                    <input type="password" placeholder="请输入密码">
+                    <input type="password" placeholder="请确认密码">
+                </div>
+                <div class="set-password-error"></div>
+                <div class="tip">
+                    <p>· 如未设置密码，设置后进入私密笔记需要验证</p>
+                    <p>· 如已设置密码，则密码重置</p>
+                    <p>· 如需取消查看密码，请点击“取消查看密码”按钮</p>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button id="cancel-set" class="secondary-btn">取消查看密码</button>
+                <button id="confirm-set" class="primary-btn">确认密码</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- -- 模态框 - 验证密码 -->
+    <div id="check-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>请输入私密笔记的密码</h3>
+                <button class="close-modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="check-password">
+                    <input type="password" placeholder="请输入密码" id="private-password-input">
+                </div>
+                <div class="password-error"></div>
+            </div>
+            <div class="modal-footer">
+                <button id="confirm-inputPassword" class="primary-btn">确认</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- -- 模态框 - 添加分类 -->
+    <div id="tab-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>标签</h3>
+                <button class="close-modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <input type="text" class="add-tab" placeholder="请输入标签名">
+            </div>
+            <div class="modal-footer">
+                <button id="confirm-addtab" class="primary-btn">确认标签</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- -- 模态框 - 登录 -->
+    <div id="login-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>登录</h3>
+                <button class="close-modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="login-username">用户名/邮箱</label>
+                    <input type="text" id="login-username" placeholder="请输入用户名或邮箱">
+                </div>
+                <div class="form-group">
+                    <label for="login-password">密码</label>
+                    <input type="password" id="login-password" placeholder="请输入密码">
+                </div>
+                <p class="error-message" id="login-error"></p>
+            </div>
+            <div class="modal-footer">
+                <button id="goto-register" class="secondary-btn">去注册</button>
+                <button id="confirm-login" class="primary-btn">登录</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 注册模态框 -->
+    <div id="register-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>注册新用户</h3>
+                <button class="close-modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="register-username">用户名</label>
+                    <input type="text" id="register-username" placeholder="请输入用户名">
+                </div>
+                <div class="form-group">
+                    <label for="register-email">邮箱</label>
+                    <input type="email" id="register-email" placeholder="请输入邮箱">
+                </div>
+                <div class="form-group">
+                    <label for="register-password">密码</label>
+                    <input type="password" id="register-password" placeholder="请输入密码">
+                </div>
+                <div class="form-group">
+                    <label for="register-confirm">确认密码</label>
+                    <input type="password" id="register-confirm" placeholder="请再次输入密码">
+                </div>
+                <p class="error-message" id="register-error"></p>
+            </div>
+            <div class="modal-footer">
+                <button id="goto-login" class="secondary-btn">去登录</button>
+                <button id="confirm-register" class="primary-btn">注册</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript文件 -->
+    <script type="module" src="./main.js"></script>
+</body>
+</html>

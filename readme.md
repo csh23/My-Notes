@@ -1,0 +1,4 @@
+# final是带有服务器端的版本，final_localstorage是不带有服务器端的版本
+# 如果带有服务器端的无法运行，运行final_localstorage可以检查除服务器数据持久化以及多用户支持以外我实现的所有功能
+
+# 使用WAMP服务器
